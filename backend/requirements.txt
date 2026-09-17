@@ -1,0 +1,6 @@
+alembic
+fastapi
+httpx
+pydantic-settings
+sqlalchemy
+uvicorn[standard]
