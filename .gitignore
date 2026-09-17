@@ -1,21 +1,8 @@
-# Python
-backend/
-__pycache__/
-*.py[cod]
-.venv/
-*.db
-*.db-journal
-
-# Node
 node_modules/
 dist/
-
-# Environment
 .env
 .env.*
 !.env.example
-
-# Editors and OS
 .vscode/
 .idea/
 .DS_Store
