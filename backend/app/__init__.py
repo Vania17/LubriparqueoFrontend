@@ -1,2 +1,0 @@
-"""Lubriparqueo backend application."""
-
