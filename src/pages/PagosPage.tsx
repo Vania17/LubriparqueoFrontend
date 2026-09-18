@@ -1,5 +1,7 @@
 import { FormField } from '../components/FormField';
 import { StatusBadge } from '../components/StatusBadge';
+import { useAuth } from '../auth/context';
+import { canManage } from '../types/auth';
 
 const recentPayments = [
   {
@@ -26,6 +28,10 @@ const recentPayments = [
 ];
 
 export function PagosPage() {
+  const { session } = useAuth();
+  const user = session!.user;
+  const canEdit = canManage(user);
+  const payments = recentPayments.filter(p => !user.responsable || p.responsable === user.responsable);
   return (
     <div className="module-grid">
       <section className="page-panel page-heading">
@@ -36,21 +42,17 @@ export function PagosPage() {
         <span className="table-caption">Datos de prueba</span>
       </section>
 
-      <section className="payment-layout">
-        <form className="page-panel payment-form">
+      {canEdit && <section className="payment-layout">
+        <form className="page-panel payment-form" onSubmit={e => e.preventDefault()}>
           <FormField label="Responsable">
-            <select defaultValue="Billy">
-              <option>Billy</option>
-              <option>Lino</option>
+            <select defaultValue={user.responsable ?? 'Billy'}>
+              {['Billy', 'Lino'].filter(r => !user.responsable || r === user.responsable).map(r => <option key={r}>{r}</option>)}
             </select>
           </FormField>
 
           <FormField label="Inquilino">
-            <select defaultValue="Baltazar">
-              <option>Baltazar</option>
-              <option>Berta Herbalite #3</option>
-              <option>Edgar Esquivel</option>
-              <option>Henry Hno.</option>
+            <select>
+              {(user.responsable === 'Lino' ? ['Edgar Esquivel', 'Henry Hno.'] : user.responsable === 'Billy' ? ['Baltazar', 'Berta Herbalite #3'] : ['Baltazar', 'Berta Herbalite #3', 'Edgar Esquivel', 'Henry Hno.']).map(name => <option key={name}>{name}</option>)}
             </select>
           </FormField>
 
@@ -74,7 +76,7 @@ export function PagosPage() {
           </button>
         </form>
 
-        <aside className="page-panel payment-preview">
+        {!user.responsable && <aside className="page-panel payment-preview">
           <p className="eyebrow">Vista previa</p>
           <h2>Aplicacion sugerida</h2>
           <div className="preview-list">
@@ -95,8 +97,8 @@ export function PagosPage() {
               <strong>Q0.00</strong>
             </div>
           </div>
-        </aside>
-      </section>
+        </aside>}
+      </section>}
 
       <section className="page-panel">
         <div className="table-header">
@@ -118,7 +120,7 @@ export function PagosPage() {
               </tr>
             </thead>
             <tbody>
-              {recentPayments.map((payment) => (
+              {payments.map((payment) => (
                 <tr key={`${payment.date}-${payment.tenant}`}>
                   <td>{payment.date}</td>
                   <td>{payment.responsable}</td>

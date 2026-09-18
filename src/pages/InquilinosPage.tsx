@@ -3,6 +3,9 @@ import { Eye, Pencil, Trash2 } from 'lucide-react';
 import { FormField } from '../components/FormField';
 import { StatusBadge } from '../components/StatusBadge';
 import { SummaryCard } from '../components/SummaryCard';
+import { useAuth } from '../auth/context';
+import { canManage } from '../types/auth';
+import { ViewState } from '../components/ViewState';
 
 type Responsable = 'Billy' | 'Lino';
 type ControlMonth = 'May2026' | 'Jun2026' | 'Jul2026';
@@ -176,7 +179,10 @@ const controlMonthLabels: Record<ControlMonth, string> = {
 };
 
 export function InquilinosPage() {
-  const [activeResponsable, setActiveResponsable] = useState<Responsable>('Billy');
+  const { session } = useAuth();
+  const user = session!.user;
+  const [activeResponsable, setActiveResponsable] = useState<Responsable>(user.responsable ?? 'Billy');
+  const canEdit = canManage(user, activeResponsable);
   const [controlMonth, setControlMonth] = useState<ControlMonth>('May2026');
   const [editableTenantData, setEditableTenantData] = useState(tenantData);
   const [modalMode, setModalMode] = useState<TenantModalMode | null>(null);
@@ -193,6 +199,7 @@ export function InquilinosPage() {
 
     const formData = new FormData(event.currentTarget);
     const responsable = formData.get('responsable') as Responsable;
+    if (!canManage(user, responsable) || !canEdit) return;
     const plan = formData.get('plan') as 'A' | 'V';
     const status = formData.get('status') as TenantStatus;
     const name = String(formData.get('name') ?? '').trim();
@@ -251,7 +258,7 @@ export function InquilinosPage() {
   }
 
   function handleDeleteTenant() {
-    if (!tenantToDelete) {
+    if (!tenantToDelete || !canEdit) {
       return;
     }
 
@@ -303,7 +310,7 @@ export function InquilinosPage() {
         </div>
         <div className="tenant-toolbar">
           <div className="segmented-control" aria-label="Responsable">
-            {(['Billy', 'Lino'] as Responsable[]).map((responsable) => (
+            {(['Billy', 'Lino'] as Responsable[]).filter(r => !user.responsable || r === user.responsable).map((responsable) => (
               <button
                 className={responsable === activeResponsable ? 'active' : ''}
                 key={responsable}
@@ -329,7 +336,7 @@ export function InquilinosPage() {
             </select>
           </label>
 
-          <button
+          {canEdit && <button
             className="primary-button compact-button"
             onClick={() => {
               setSelectedTenant(null);
@@ -338,7 +345,7 @@ export function InquilinosPage() {
             type="button"
           >
             Nuevo inquilino
-          </button>
+          </button>}
         </div>
       </section>
 
@@ -383,7 +390,7 @@ export function InquilinosPage() {
           <span className="table-caption">Datos de prueba</span>
         </div>
 
-        <div className="table-scroll">
+        {tenants.length === 0 ? <ViewState kind="empty" title="Sin inquilinos registrados" /> : <div className="table-scroll">
           <table className="data-table">
             <thead>
               <tr>
@@ -447,7 +454,7 @@ export function InquilinosPage() {
                       >
                         <Eye size={16} />
                       </button>
-                    <button
+                    {canEdit && <button
                       aria-label={`Editar ${tenant.name}`}
                       className="icon-button"
                       onClick={() => {
@@ -458,8 +465,8 @@ export function InquilinosPage() {
                       type="button"
                     >
                       <Pencil size={16} />
-                    </button>
-                      <button
+                    </button>}
+                      {canEdit && <button
                         aria-label={`Eliminar ${tenant.name}`}
                         className="icon-button danger"
                         onClick={() => setTenantToDelete(tenant)}
@@ -467,14 +474,14 @@ export function InquilinosPage() {
                         type="button"
                       >
                         <Trash2 size={16} />
-                      </button>
+                      </button>}
                     </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-        </div>
+        </div>}
       </section>
 
       {modalMode ? (
@@ -553,8 +560,7 @@ export function InquilinosPage() {
             </FormField>
             <FormField label="Responsable">
               <select defaultValue={activeResponsable} name="responsable">
-                <option>Billy</option>
-                <option>Lino</option>
+                {(['Billy', 'Lino'] as Responsable[]).filter(r => !user.responsable || r === user.responsable).map(r => <option key={r}>{r}</option>)}
               </select>
             </FormField>
             <FormField label="Plan">

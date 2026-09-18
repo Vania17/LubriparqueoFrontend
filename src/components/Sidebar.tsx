@@ -1,4 +1,5 @@
 import type { AppSection, NavigationItem } from '../types/navigation';
+import { useAuth } from '../auth/context';
 
 const navigationItems: NavigationItem[] = [
   {
@@ -34,6 +35,7 @@ type SidebarProps = {
 };
 
 export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
+  const { session } = useAuth();
   return (
     <aside className="sidebar" aria-label="Navegacion principal">
       <div className="brand">
@@ -45,7 +47,7 @@ export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
       </div>
 
       <nav className="nav-list">
-        {navigationItems.map((item) => (
+        {navigationItems.filter(item => session?.user.sections.includes(item.id)).map((item) => (
           <button
             className={item.id === activeSection ? 'nav-item active' : 'nav-item'}
             key={item.id}

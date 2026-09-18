@@ -80,6 +80,11 @@ disponibles son **Al dia**, **Parcial** y **Moroso**.
 
 ## Limitaciones actuales
 
+- El acceso, logout, expiracion y controles visuales por rol estan implementados.
+  La integracion real depende de F01-AUTH en Fastify. Configuracion y contrato:
+  [Acceso del frontend](docs/acceso_frontend.md). Para probar sin backend, usar
+  `VITE_AUTH_MODE=demo` en `.env.local` y reiniciar Vite; solo disponible en desarrollo.
+
 - Los cambios de inquilinos se guardan solo en memoria y se pierden al recargar
   la pagina o salir de esa seccion.
 - El selector de mes cambia el contexto mostrado, pero todavia no administra
@@ -88,7 +93,8 @@ disponibles son **Al dia**, **Parcial** y **Moroso**.
   del historial de obligaciones y pagos.
 - Pagos, parqueo, reportes y graficas son vistas de demostracion; no deben
   utilizarse como registros contables reales.
-- No hay inicio de sesion, permisos por usuario ni almacenamiento persistente.
+- La proteccion real de datos y acciones debe validarse en API; los controles
+  visuales del frontend no sustituyen la autorizacion del servidor.
 
 ## Comandos disponibles
 

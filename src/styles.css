@@ -20,6 +20,29 @@ body {
   min-height: 100vh;
 }
 
+button:disabled { opacity: 0.6; cursor: wait; }
+button:focus-visible { outline: 3px solid #2f6f9f; outline-offset: 3px; }
+.login-shell { display: grid; place-items: center; min-height: 100dvh; padding: 24px; }
+.login-panel { display: grid; gap: 24px; width: min(100%, 420px); padding: 32px; background: white; border: 1px solid #d8dfdc; border-radius: 8px; }
+.login-panel h1 { font-size: 1.5rem; margin-bottom: 8px; }
+.login-form { display: grid; gap: 20px; }
+.password-field { display: flex; gap: 8px; align-items: center; }
+.password-field input { min-width: 0; }
+.password-field .icon-button { flex: 0 0 38px; height: 42px; }
+.auth-submit, .logout-button, .view-state button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.auth-error { border: 1px solid #efc8c4; background: #fff0ee; color: #9e2d29; padding: 12px; border-radius: 6px; font-size: 0.9rem; overflow-wrap: anywhere; }
+.auth-notice { background: #fff5df; color: #79520f; padding: 8px 12px; border-radius: 6px; font-size: 0.85rem; }
+.session-tools { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.session-tools .user-chip { font-weight: 500; overflow-wrap: anywhere; }
+.user-chip small { display: block; margin-top: 4px; color: #62706a; font-weight: 400; }
+.view-state { display: grid; justify-items: center; gap: 16px; padding: 40px 24px; text-align: center; max-width: 560px; margin: auto; }
+.view-state h2 { font-size: 1.2rem; margin: 0; }
+.view-state svg { color: #62706a; }
+.loading-icon { animation: auth-spin 1s linear infinite; }
+@keyframes auth-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .loading-icon { animation: none; } }
+@media (max-width: 560px) { .login-panel { padding: 24px; } .session-tools { width: 100%; } }
+
 .app-layout {
   display: grid;
   grid-template-columns: 232px minmax(0, 1fr);
